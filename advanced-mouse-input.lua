@@ -12,6 +12,14 @@ function AdvancedMouseInput:create()
 end
 
 local mouse = love.mouse
+mouse.wheel = { dx = 0, dy = 0 }
+
+--- LOVE mouse wheel scroll handler
+-- @param dx {int} - The horizontal movement of the wheel scroll
+-- @param dy {int} - The vertical movement of the wheel scroll (positive ~ forwards, negative ~ backwards)
+function love.wheelmoved(dx, dy)
+   mouse.wheel.dx, mouse.wheel.dy = mouse.wheel.dx + dx, mouse.wheel.dy + dy
+end
 
 local mouseHoverIsBlocked = false
 local hoveredRectangleToDraw
@@ -53,6 +61,7 @@ end
 
 --- Must be called at the very end of the LOVE update handler
 function AdvancedMouseInput:afterUpdate()
+   mouse.wheel.dx, mouse.wheel.dy = 0, 0
    mouse.setCursor(mouse.cursor)
 end
 
