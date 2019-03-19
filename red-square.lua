@@ -4,9 +4,14 @@ RedSquare.__index = RedSquare
 local HAND_CURSOR = love.mouse.getSystemCursor("hand")
 
 local SIZE = 100
+local SIZE_MODIFIER = 4
 local FILL_OPACITY = 0.3
 local HOVERED_FILL_OPACITY = 0.6
 local LINE_OPACITY = 0.8
+
+local LEFT_MOUSE_BUTTON = 1
+local RIGHT_MOUSE_BUTTON = 2
+local MIDDLE_MOUSE_BUTTON = 3
 
 --- A controller that keeps track of an X and Y offset as well as a zoom ratio
 function RedSquare:create(x, y)
@@ -22,6 +27,13 @@ function RedSquare:create(x, y)
    return this
 end
 
+function RedSquare:enlargeBy(size)
+   self.x = self.x - size / 2
+   self.y = self.y - size / 2
+   self.width = self.width + size
+   self.height = self.width
+end
+
 --- LOVE update handler
 function RedSquare:update()
    local mouseInfo = love.mouse.registerSolid(self)
@@ -31,6 +43,16 @@ function RedSquare:update()
       love.mouse.cursor = HAND_CURSOR
       self.y = self.y - love.mouse.wheel.dy ^ 3
       self.x = self.x - love.mouse.wheel.dx ^ 3
+   end
+
+   for button, _ in pairs(mouseInfo.clicksPerButton) do
+      if button == LEFT_MOUSE_BUTTON then
+         self:enlargeBy(2 * SIZE_MODIFIER)
+      elseif button == RIGHT_MOUSE_BUTTON then
+         self:enlargeBy(-2 * SIZE_MODIFIER)
+      elseif button == MIDDLE_MOUSE_BUTTON then
+         self:enlargeBy(SIZE - self.width)
+      end
    end
 end
 

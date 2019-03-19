@@ -13,6 +13,7 @@ end
 
 local mouse = love.mouse
 mouse.wheel = { dx = 0, dy = 0 }
+mouse.clicksPerButton = {}
 
 --- LOVE mouse wheel scroll handler
 -- @param dx {int} - The horizontal movement of the wheel scroll
@@ -28,6 +29,24 @@ function love.wheelmoved(dx, dy)
       end
    end
    mouse.wheel.dx, mouse.wheel.dy = mouse.wheel.dx + dx, mouse.wheel.dy + dy
+end
+
+--- LOVE mouse click handler
+-- @param x {int} - Mouse x position, in pixels
+-- @param y {int} - Mouse y position, in pixels
+-- @param button {int} - The button index that was pressed. 1 is the primary mouse button,
+-- 2 is the secondary mouse button and 3 is the middle button. Further buttons are mouse dependent
+-- @param isTouch {boolean} - True if the mouse button press originated from a touchscreen touch-press
+-- @param presses {int} - The number of presses in a short time frame and small area, used to simulate double, triple
+-- clicks
+function love.mousepressed(x, y, button, isTouch, presses)
+   mouse.clicksPerButton[button] = mouse.clicksPerButton[button] or {}
+   mouse.clicksPerButton[button][#mouse.clicksPerButton[button] + 1] = {
+      x = x,
+      y = y,
+      isTouch = isTouch,
+      presses = presses,
+   }
 end
 
 local mouseHoverIsBlocked = false
@@ -49,6 +68,33 @@ local function mouseIsInside(leftX, topY, rightX, bottomY)
    return not mouseHoverIsBlocked and isInside(mouse.getX(), mouse.getY(), leftX, topY, rightX, bottomY)
 end
 
+--- Returns the elements of an array that meet a condition and removes them from the original array. Retains its order.
+-- @param array {any[]} - The array to extract elements from.
+-- @param predicate {function} - The filtering function that evaluates whether an element should be taken.
+-- @return The resulting array, or nil if no elements have been found.
+local function extractFrom(array, predicate)
+   local extractedElements = 0
+   local result
+   local size = #array
+
+   for i = 1, size do
+      local currentElement = array[i]
+      if predicate(currentElement) then
+         extractedElements = extractedElements + 1
+         result = result or {}
+         result[#result + 1] = currentElement
+         array[i] = nil
+      else
+         if extractedElements > 0 then
+            array[i - extractedElements] = currentElement
+            array[i] = nil
+         end
+      end
+   end
+
+   return result
+end
+
 --- Considers a rectangle solid.
 function mouse.registerSolid(object)
    local isHovered = mouseIsInside(object.x, object.y, object.x + object.width, object.y + object.height)
@@ -57,8 +103,16 @@ function mouse.registerSolid(object)
       hoveredRectangleToDraw = object
    end
 
+   local clicksPerButtonInObject = {}
+   for button, clicks in pairs(mouse.clicksPerButton) do
+      clicksPerButtonInObject[button] = extractFrom(clicks, function(click)
+         return isInside(click.x, click.y, object.x, object.y, object.x + object.width, object.y + object.height)
+      end)
+   end
+
    return {
-      isHovered = isHovered
+      isHovered = isHovered,
+      clicksPerButton = clicksPerButtonInObject,
    }
 end
 
@@ -71,6 +125,7 @@ end
 --- Must be called at the very end of the LOVE update handler
 function AdvancedMouseInput:afterUpdate()
    mouse.wheel.dx, mouse.wheel.dy = 0, 0
+   mouse.clicksPerButton = {}
    mouse.setCursor(mouse.cursor)
 end
 
