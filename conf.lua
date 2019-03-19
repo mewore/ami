@@ -1,0 +1,31 @@
+function love.conf(t)
+   t.identity = "ami"
+   t.appendidentity = true
+   t.author = "Mewore"
+   t.title = "Advanced Mouse Input"
+   -- Attach a console (boolean, Windows only)
+   t.console = true
+   -- Enable release mode (boolean)
+   t.release = false
+   -- The window width (number)
+   t.window.width = 1280
+   -- The window height (number)
+   t.window.height = 720
+   -- Remove all border visuals from the window (boolean)
+   t.window.borderless = false
+   -- Let the window be user-resizable (boolean)
+   t.window.resizable = true
+   -- Enable fullscreen (boolean)
+   t.window.fullscreen = false
+   -- Enable vertical sync (boolean)
+   t.window.vsync = true
+   -- The number of FSAA-buffers (number)
+   t.window.fsaa = 0
+
+   --Modules to enable
+   t.modules.keyboard = true
+   t.modules.event = true
+   t.modules.graphics = true
+   t.modules.timer = true
+   t.modules.mouse = true
+end
