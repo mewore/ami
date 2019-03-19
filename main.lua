@@ -2,6 +2,7 @@ require "advanced-mouse-input"
 require "red-square"
 
 local advancedMouseInput = AdvancedMouseInput:create()
+love.mouse.horizontalScrollButtons = { "lshift", "rshift" }
 
 local objects = {
    RedSquare:create(100, 200),

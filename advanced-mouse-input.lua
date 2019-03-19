@@ -18,6 +18,15 @@ mouse.wheel = { dx = 0, dy = 0 }
 -- @param dx {int} - The horizontal movement of the wheel scroll
 -- @param dy {int} - The vertical movement of the wheel scroll (positive ~ forwards, negative ~ backwards)
 function love.wheelmoved(dx, dy)
+   if mouse.horizontalScrollButtons then
+      for _, button in ipairs(mouse.horizontalScrollButtons) do
+         if love.keyboard.isDown(button) then
+            dx = dx + dy
+            dy = 0
+            break
+         end
+      end
+   end
    mouse.wheel.dx, mouse.wheel.dy = mouse.wheel.dx + dx, mouse.wheel.dy + dy
 end
 

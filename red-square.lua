@@ -30,6 +30,7 @@ function RedSquare:update()
    if mouseInfo.isHovered then
       love.mouse.cursor = HAND_CURSOR
       self.y = self.y - love.mouse.wheel.dy ^ 3
+      self.x = self.x - love.mouse.wheel.dx ^ 3
    end
 end
 
