@@ -2,6 +2,7 @@ RedSquare = {}
 RedSquare.__index = RedSquare
 
 local HAND_CURSOR = love.mouse.getSystemCursor("hand")
+local DRAG_CURSOR = love.mouse.getSystemCursor("sizeall")
 
 local SIZE = 100
 local SIZE_MODIFIER = 4
@@ -12,6 +13,9 @@ local LINE_OPACITY = 0.8
 local LEFT_MOUSE_BUTTON = 1
 local RIGHT_MOUSE_BUTTON = 2
 local MIDDLE_MOUSE_BUTTON = 3
+
+local DRAG_BEGIN_DISTANCE = 5
+local DRAG_BEGIN_DISTANCE_SQUARED = DRAG_BEGIN_DISTANCE * DRAG_BEGIN_DISTANCE
 
 --- A controller that keeps track of an X and Y offset as well as a zoom ratio
 function RedSquare:create(x, y)
@@ -41,16 +45,28 @@ function RedSquare:update()
 
    if mouseInfo.isHovered then
       love.mouse.cursor = HAND_CURSOR
-      self.y = self.y - love.mouse.wheel.dy ^ 3
-      self.x = self.x - love.mouse.wheel.dx ^ 3
+      if not mouseInfo.drag then
+         self.y = self.y - love.mouse.wheel.dy ^ 3
+         self.x = self.x - love.mouse.wheel.dx ^ 3
+      end
    end
 
-   for button, _ in pairs(mouseInfo.clicksPerButton) do
-      if button == LEFT_MOUSE_BUTTON then
+   if mouseInfo.drag then
+      if mouseInfo.drag.isDragging or (mouseInfo.drag.button == LEFT_MOUSE_BUTTON
+            and mouseInfo.drag.squaredDistance >= DRAG_BEGIN_DISTANCE_SQUARED) then
+         love.mouse.importantCursor = DRAG_CURSOR
+         mouseInfo.drag.isDragging = true
+         self.x = mouseInfo.drag.objectXOnDragStart + mouseInfo.drag.dx
+         self.y = mouseInfo.drag.objectYOnDragStart + mouseInfo.drag.dy
+      end
+   end
+
+   if mouseInfo.dragFinished and not mouseInfo.dragFinished.isDragging and mouseInfo.isHovered then
+      if mouseInfo.dragFinished.button == LEFT_MOUSE_BUTTON then
          self:enlargeBy(2 * SIZE_MODIFIER)
-      elseif button == RIGHT_MOUSE_BUTTON then
+      elseif mouseInfo.dragFinished.button == RIGHT_MOUSE_BUTTON then
          self:enlargeBy(-2 * SIZE_MODIFIER)
-      elseif button == MIDDLE_MOUSE_BUTTON then
+      elseif mouseInfo.dragFinished.button == MIDDLE_MOUSE_BUTTON then
          self:enlargeBy(SIZE - self.width)
       end
    end

@@ -14,6 +14,8 @@ end
 local mouse = love.mouse
 mouse.wheel = { dx = 0, dy = 0 }
 mouse.clicksPerButton = {}
+local hasDrag = false
+local updateCounter = 0
 
 --- LOVE mouse wheel scroll handler
 -- @param dx {int} - The horizontal movement of the wheel scroll
@@ -51,6 +53,7 @@ end
 
 local mouseHoverIsBlocked = false
 local hoveredRectangleToDraw
+local dragToDraw
 
 local function isInside(x, y, leftX, topY, rightX, bottomY)
    return (leftX == nil or x >= leftX)
@@ -110,23 +113,78 @@ function mouse.registerSolid(object)
       end)
    end
 
-   return {
+   local result = {
       isHovered = isHovered,
       clicksPerButton = clicksPerButtonInObject,
    }
+
+   local drag = object.__mouseDrag
+   if drag ~= nil then
+      if hasDrag or drag.lastUpdateCounter < updateCounter - 1 then
+         -- Cancel
+         result.dragCanceled = drag
+         drag = nil
+      elseif not love.mouse.isDown(drag.button) then
+         -- Confirm
+         result.dragConfirmed = drag
+         drag = nil
+      end
+   else
+      -- Start
+      if not hasDrag then
+         for button, clicks in pairs(clicksPerButtonInObject) do
+            drag = {
+               button = button,
+               fromX = clicks[1].x,
+               fromY = clicks[1].y,
+               objectXOnDragStart = object.x,
+               objectYOnDragStart = object.y,
+               maxDx = 0,
+               maxDy = 0,
+               maxSquaredDistance = 0,
+            }
+            result.dragStarted = drag
+            break
+         end
+      end
+   end
+
+   hasDrag = hasDrag or (drag ~= nil)
+
+   result.drag = drag
+   object.__mouseDrag = drag
+   result.dragFinished = result.dragCanceled or result.dragConfirmed
+
+   if drag ~= nil then
+      drag.toX, drag.toY = love.mouse.getPosition()
+      drag.lastUpdateCounter = updateCounter
+      drag.dx = drag.toX - drag.fromX
+      drag.dy = drag.toY - drag.fromY
+      drag.squaredDistance = drag.dx * drag.dx + drag.dy * drag.dy
+      drag.maxDx = math.max(drag.maxDx, math.abs(drag.dx))
+      drag.maxDy = math.max(drag.maxDy, math.abs(drag.dy))
+      drag.maxSquaredDistance = math.max(drag.maxSquaredDistance, math.abs(drag.squaredDistance))
+      dragToDraw = drag
+   end
+
+   return result
 end
 
 --- Must be called at the very beginning of the LOVE update handler
 function AdvancedMouseInput:beforeUpdate()
+   dragToDraw = nil
+   updateCounter = updateCounter + 1
    mouseHoverIsBlocked = false
    mouse.cursor = NORMAL_CURSOR
+   mouse.importantCursor = nil
 end
 
 --- Must be called at the very end of the LOVE update handler
 function AdvancedMouseInput:afterUpdate()
    mouse.wheel.dx, mouse.wheel.dy = 0, 0
    mouse.clicksPerButton = {}
-   mouse.setCursor(mouse.cursor)
+   mouse.setCursor(mouse.importantCursor or mouse.cursor)
+   hasDrag = false
 end
 
 --- LOVE draw handler (used only for debugging purposes)
@@ -139,6 +197,12 @@ function AdvancedMouseInput:draw()
       love.graphics.print("Hovered", hoveredRectangleToDraw.x, hoveredRectangleToDraw.y - DEBUG_TEXT_HEIGHT)
 
       hoveredRectangleToDraw = nil
-      love.graphics.reset()
    end
+
+   if dragToDraw then
+      love.graphics.setColor(0, 0, 0, 1)
+      love.graphics.line(dragToDraw.fromX, dragToDraw.fromY, dragToDraw.toX, dragToDraw.toY)
+   end
+
+   love.graphics.reset()
 end
