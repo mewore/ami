@@ -1,12 +1,12 @@
 require "advanced-mouse-input"
-require "red-square"
+require "draggable-square"
 
 local advancedMouseInput = AdvancedMouseInput:create()
 love.mouse.horizontalScrollButtons = { "lshift", "rshift" }
 
 local objects = {
-   RedSquare:create(100, 200),
-   RedSquare:create(120, 150),
+   DraggableSquare:create(100, 200),
+   DraggableSquare:create(120, 150),
 }
 
 --- LOVE update handler

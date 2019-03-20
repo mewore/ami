@@ -1,5 +1,5 @@
-RedSquare = {}
-RedSquare.__index = RedSquare
+DraggableSquare = {}
+DraggableSquare.__index = DraggableSquare
 
 local HAND_CURSOR = love.mouse.getSystemCursor("hand")
 local DRAG_CURSOR = love.mouse.getSystemCursor("sizeall")
@@ -18,7 +18,7 @@ local DRAG_BEGIN_DISTANCE = 5
 local DRAG_BEGIN_DISTANCE_SQUARED = DRAG_BEGIN_DISTANCE * DRAG_BEGIN_DISTANCE
 
 --- A controller that keeps track of an X and Y offset as well as a zoom ratio
-function RedSquare:create(x, y)
+function DraggableSquare:create(x, y)
    local this = {
       width = SIZE,
       height = SIZE,
@@ -31,7 +31,7 @@ function RedSquare:create(x, y)
    return this
 end
 
-function RedSquare:enlargeBy(size)
+function DraggableSquare:enlargeBy(size)
    self.x = self.x - size / 2
    self.y = self.y - size / 2
    self.width = self.width + size
@@ -39,7 +39,7 @@ function RedSquare:enlargeBy(size)
 end
 
 --- LOVE update handler
-function RedSquare:update()
+function DraggableSquare:update()
    local mouseInfo = love.mouse.registerSolid(self)
    self.isHovered = mouseInfo.isHovered
 
@@ -53,15 +53,15 @@ function RedSquare:update()
 
    if mouseInfo.drag then
       if mouseInfo.drag.isDragging or (mouseInfo.drag.button == LEFT_MOUSE_BUTTON
-            and mouseInfo.drag.squaredDistance >= DRAG_BEGIN_DISTANCE_SQUARED) then
+            and mouseInfo.drag.maxSquaredDistance >= DRAG_BEGIN_DISTANCE_SQUARED) then
          love.mouse.importantCursor = DRAG_CURSOR
-         mouseInfo.drag.isDragging = true
          self.x = mouseInfo.drag.objectXOnDragStart + mouseInfo.drag.dx
          self.y = mouseInfo.drag.objectYOnDragStart + mouseInfo.drag.dy
       end
    end
 
-   if mouseInfo.dragFinished and not mouseInfo.dragFinished.isDragging and mouseInfo.isHovered then
+   if mouseInfo.dragFinished and mouseInfo.dragFinished.maxSquaredDistance < DRAG_BEGIN_DISTANCE_SQUARED
+         and mouseInfo.isHovered then
       if mouseInfo.dragFinished.button == LEFT_MOUSE_BUTTON then
          self:enlargeBy(2 * SIZE_MODIFIER)
       elseif mouseInfo.dragFinished.button == RIGHT_MOUSE_BUTTON then
@@ -73,7 +73,7 @@ function RedSquare:update()
 end
 
 --- LOVE draw handler
-function RedSquare:draw()
+function DraggableSquare:draw()
    love.graphics.setColor(0.9, 0.1, 0, self.isHovered and HOVERED_FILL_OPACITY or FILL_OPACITY)
    love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
 
