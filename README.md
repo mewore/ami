@@ -24,7 +24,7 @@ been initiated with.
 - **presses** (`int`) The number of presses in a short time frame and small area, used to simulate double, triple
 clicks.
 
-#### `DragInfo` ([mousepressed](https://love2d.org/wiki/love.mousepressed) event)
+#### `DragInfo`
 - **button** (`int`) The mouse button with which the drag is being made.
 - **fromX** (`int`) The X position of the click from which the drag has begun, in pixels.
 - **fromY** (`int`) The Y position of the click from which the drag has begun, in pixels.
