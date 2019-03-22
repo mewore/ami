@@ -127,7 +127,7 @@ function mouse.registerSolid(object)
    if drag ~= nil then
       if hasDrag or drag.lastUpdateCounter < updateCounter - 1 then
          -- Cancel
-         result.dragCanceled = drag
+         result.dragCancelled = drag
          drag = nil
       elseif not love.mouse.isDown(drag.button) then
          -- Confirm
@@ -158,7 +158,7 @@ function mouse.registerSolid(object)
 
    result.drag = drag
    object.__mouseDrag = drag
-   result.dragFinished = result.dragCanceled or result.dragConfirmed
+   result.dragFinished = result.dragCancelled or result.dragConfirmed
 
    if drag ~= nil then
       drag.toX, drag.toY = love.mouse.getPosition()
