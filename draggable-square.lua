@@ -8,6 +8,7 @@ local SIZE = 100
 local SIZE_MODIFIER = 4
 local FILL_OPACITY = 0.3
 local HOVERED_FILL_OPACITY = 0.6
+local DRAGGED_FILL_OPACITY = 0.8
 local LINE_OPACITY = 0.8
 
 local LEFT_MOUSE_BUTTON = 1
@@ -25,6 +26,7 @@ function DraggableSquare:create(x, y)
       x = x,
       y = y,
       isHovered = false,
+      isDragged = false,
    }
    setmetatable(this, self)
 
@@ -51,7 +53,9 @@ function DraggableSquare:update()
       end
    end
 
+   self.isDragged = false
    if mouseInfo.drag then
+      self.isDragged = true
       if mouseInfo.drag.isDragging or (mouseInfo.drag.button == LEFT_MOUSE_BUTTON
             and mouseInfo.drag.maxSquaredDistance >= DRAG_BEGIN_DISTANCE_SQUARED) then
          love.mouse.importantCursor = DRAG_CURSOR
@@ -74,7 +78,14 @@ end
 
 --- LOVE draw handler
 function DraggableSquare:draw()
-   love.graphics.setColor(0.9, 0.1, 0, self.isHovered and HOVERED_FILL_OPACITY or FILL_OPACITY)
+   local fillOpacity = FILL_OPACITY
+   if self.isDragged then
+      fillOpacity = DRAGGED_FILL_OPACITY
+   elseif self.isHovered then
+      fillOpacity = HOVERED_FILL_OPACITY
+   end
+
+   love.graphics.setColor(0.9, 0.1, 0, fillOpacity)
    love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
 
    love.graphics.setColor(0.9, 0.1, 0, LINE_OPACITY)
