@@ -1,3 +1,6 @@
+--- Advanced Mouse Input
+-- @version 1.0.0
+
 AdvancedMouseInput = {}
 AdvancedMouseInput.__index = AdvancedMouseInput
 
