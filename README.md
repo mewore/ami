@@ -8,14 +8,14 @@ Advanced Mouse Input (not really that advanced actually but eh)
 - **isHovered** (`boolean`)
 - **clicksPerButton** (`(MouseClick[] | nil)[]`) - For every mouse button (1=left, 2=right, 3=middle) there is 
 an array of the mouse clicks at its corresponding index, or `nil` if there are no clicks.
-- **dragStarted** (`DragInfo`) - Present only when a drag has started at this update.
-- **drag** (`DragInfo`) - Present as long as drag is ongoing. It is not present at the moment when the drag has
+- **dragStarted** (`DragInfo | nil`) - Present only when a drag has started at this update.
+- **drag** (`DragInfo | nil`) - Present as long as drag is ongoing. It is not present at the moment when the drag has
 ended.
-- **dragCancelled** (`DragInfo`) - Present if the drag has been cancelled (another drag has just begun,
+- **dragCancelled** (`DragInfo | nil`) - Present if the drag has been cancelled (another drag has just begun,
 interrupting it, or the )
-- **dragConfirmed** (`DragInfo`) - Present if the drag has ended with a normal release of the same button it has
+- **dragConfirmed** (`DragInfo | nil`) - Present if the drag has ended with a normal release of the same button it has
 been initiated with.
-- **dragFinished** (`DragInfo`) - Present if the drag has either been cancelled or confirmed.
+- **dragFinished** (`DragInfo | nil`) - Present if the drag has either been cancelled or confirmed.
 
 #### `MouseClick` ([mousepressed](https://love2d.org/wiki/love.mousepressed) event)
 - **x** (`int`) The X position of the cursor (distance from the left border of the window), in pixels.
