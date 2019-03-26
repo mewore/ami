@@ -1,5 +1,5 @@
 --- Advanced Mouse Input
--- @version 1.0.0
+-- @version 1.0.1
 -- @url https://raw.githubusercontent.com/mewore/ami/master/advanced-mouse-input.lua
 -- @description A "wrapper" of the built-in LOVE mouse input handlers that allows for easier complex input handling.
 
@@ -125,13 +125,21 @@ function mouse.registerSolid(object)
 
    local drag = object.__mouseDrag
    if drag ~= nil then
-      if hasDrag or drag.lastUpdateCounter < updateCounter - 1 then
-         -- Cancel
-         result.dragCancelled = drag
-         drag = nil
-      elseif not love.mouse.isDown(drag.button) then
+      local hasClickedAnotherButton = false
+      for button, _ in pairs(clicksPerButtonInObject) do
+         if button ~= drag.button then
+            hasClickedAnotherButton = true
+         end
+         break
+      end
+
+      if not love.mouse.isDown(drag.button) then
          -- Confirm
          result.dragConfirmed = drag
+         drag = nil
+      elseif hasDrag or hasClickedAnotherButton or drag.lastUpdateCounter < updateCounter - 1 then
+         -- Cancel
+         result.dragCancelled = drag
          drag = nil
       end
    else
