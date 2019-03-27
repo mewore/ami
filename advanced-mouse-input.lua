@@ -1,5 +1,5 @@
 --- Advanced Mouse Input
--- @version 1.0.1
+-- @version 1.0.2
 -- @url https://raw.githubusercontent.com/mewore/ami/master/advanced-mouse-input.lua
 -- @description A "wrapper" of the built-in LOVE mouse input handlers that allows for easier complex input handling.
 
@@ -104,17 +104,24 @@ local function extractFrom(array, predicate)
 end
 
 --- Considers a rectangle solid.
-function mouse.registerSolid(object)
-   local isHovered = mouseIsInside(object.x, object.y, object.x + object.width, object.y + object.height)
+function mouse.registerSolid(object, options)
+   local leftX, topY, rightX, bottomY
+   if options and options.isWholeScreen then
+      leftX, topY, rightX, bottomY = nil, nil, nil, nil
+   else
+      leftX, topY, rightX, bottomY = object.x, object.y, object.x + object.width, object.y + object.height
+   end
+
+   local isHovered = mouseIsInside(leftX, topY, rightX, bottomY)
    if isHovered then
       mouseHoverIsBlocked = true
-      hoveredRectangleToDraw = object
+      hoveredRectangleToDraw = (not options or not options.isWholeScreen) and object or nil
    end
 
    local clicksPerButtonInObject = {}
    for button, clicks in pairs(mouse.clicksPerButton) do
       clicksPerButtonInObject[button] = extractFrom(clicks, function(click)
-         return isInside(click.x, click.y, object.x, object.y, object.x + object.width, object.y + object.height)
+         return isInside(click.x, click.y, leftX, topY, rightX, bottomY)
       end)
    end
 
@@ -150,8 +157,8 @@ function mouse.registerSolid(object)
                button = button,
                fromX = clicks[1].x,
                fromY = clicks[1].y,
-               objectXOnDragStart = object.x,
-               objectYOnDragStart = object.y,
+               objectXOnDragStart = leftX,
+               objectYOnDragStart = topY,
                maxDx = 0,
                maxDy = 0,
                maxSquaredDistance = 0,
