@@ -4,7 +4,7 @@ Advanced Mouse Input (not really that advanced actually but eh)
 
 ## Type definitions
 
-#### `love.mouse.registerSolid(object)` return value
+#### `love.mouse.registerSolid(object: table, [options: Options])` return value
 - **isHovered** (`boolean`)
 - **clicksPerButton** (`(MouseClick[] | nil)[]`) - For every mouse button (1=left, 2=right, 3=middle) there is 
 an array of the mouse clicks at its corresponding index, or `nil` if there are no clicks.
@@ -16,6 +16,9 @@ interrupting it, or the )
 - **dragConfirmed** (`DragInfo | nil`) - Present if the drag has ended with a normal release of the same button it has
 been initiated with.
 - **dragFinished** (`DragInfo | nil`) - Present if the drag has either been cancelled or confirmed.
+
+#### `Options`
+- **isWholeScreen** (`boolean`) Whether the object always covers the whole screen.
 
 #### `MouseClick` ([mousepressed](https://love2d.org/wiki/love.mousepressed) event)
 - **x** (`int`) The X position of the cursor (distance from the left border of the window), in pixels.
