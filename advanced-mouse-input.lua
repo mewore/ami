@@ -1,5 +1,5 @@
 --- Advanced Mouse Input
--- @version 1.0.3
+-- @version 1.0.4
 -- @url https://raw.githubusercontent.com/mewore/ami/master/advanced-mouse-input.lua
 -- @description A "wrapper" of the built-in LOVE mouse input handlers that allows for easier complex input handling.
 
@@ -121,16 +121,21 @@ function mouse.registerSolid(object, options)
       hoveredRectangleToDraw = { leftX = leftX, topY = topY, rightX = rightX, bottomY = bottomY }
    end
 
+   local clickCount = 0
    local clicksPerButtonInObject = {}
    for button, clicks in pairs(mouse.clicksPerButton) do
       clicksPerButtonInObject[button] = extractFrom(clicks, function(click)
          return isInside(click.x, click.y, leftX, topY, rightX, bottomY)
       end)
+      if clicksPerButtonInObject[button] ~= nil then
+         clickCount = clickCount + #clicksPerButtonInObject[button]
+      end
    end
 
    local result = {
       isHovered = isHovered,
       clicksPerButton = clicksPerButtonInObject,
+      clickCount = clickCount,
    }
 
    local drag = object.__mouseDrag

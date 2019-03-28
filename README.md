@@ -6,6 +6,7 @@ Advanced Mouse Input (not really that advanced actually but eh)
 
 #### `love.mouse.registerSolid(object: table, [options: Options])` return value
 - **isHovered** (`boolean`)
+- **clickCount** (`int`) - The total number of clicks this object has received.
 - **clicksPerButton** (`(MouseClick[] | nil)[]`) - For every mouse button (1=left, 2=right, 3=middle) there is 
 an array of the mouse clicks at its corresponding index, or `nil` if there are no clicks.
 - **dragStarted** (`DragInfo | nil`) - Present only when a drag has started at this update.
