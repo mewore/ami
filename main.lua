@@ -1,14 +1,18 @@
 require "advanced-mouse-input"
 require "background"
 require "draggable-square"
+require "top-bar"
 
 local advancedMouseInput = AdvancedMouseInput:create()
 love.mouse.horizontalScrollButtons = { "lshift", "rshift" }
 
-local background = Background:create()
 local objects = {
+   -- Top
+   TopBar:create(),
    DraggableSquare:create(100, 200),
    DraggableSquare:create(120, 150),
+   Background:create(),
+   -- Bottom
 }
 
 --- LOVE update handler
@@ -22,15 +26,12 @@ function love.update()
    for i = 1, #objects do
       objects[i]:update()
    end
-   background:update()
 
    advancedMouseInput:afterUpdate()
 end
 
 --- LOVE draw handler
 function love.draw()
-   background:draw()
-
    for i = #objects, 1, -1 do
       objects[i]:draw()
    end

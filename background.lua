@@ -4,7 +4,7 @@ Background.__index = Background
 local DRAG_CURSOR = love.mouse.getSystemCursor("sizewe")
 local DRAG_BEGIN_DISTANCE = 5
 
---- A controller that keeps track of an X and Y offset as well as a zoom ratio
+--- The background, with a hint of blue.
 function Background:create()
    local this = {
       blueness = 0,

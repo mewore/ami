@@ -18,7 +18,7 @@ local MIDDLE_MOUSE_BUTTON = 3
 local DRAG_BEGIN_DISTANCE = 5
 local DRAG_BEGIN_DISTANCE_SQUARED = DRAG_BEGIN_DISTANCE * DRAG_BEGIN_DISTANCE
 
---- A controller that keeps track of an X and Y offset as well as a zoom ratio
+--- A square that can be dragged around with the mouse.
 function DraggableSquare:create(x, y)
    local this = {
       width = SIZE,

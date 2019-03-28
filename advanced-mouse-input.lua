@@ -1,5 +1,5 @@
 --- Advanced Mouse Input
--- @version 1.0.2
+-- @version 1.0.3
 -- @url https://raw.githubusercontent.com/mewore/ami/master/advanced-mouse-input.lua
 -- @description A "wrapper" of the built-in LOVE mouse input handlers that allows for easier complex input handling.
 
@@ -108,6 +108,9 @@ function mouse.registerSolid(object, options)
    local leftX, topY, rightX, bottomY
    if options and options.isWholeScreen then
       leftX, topY, rightX, bottomY = nil, nil, nil, nil
+   elseif options and options.shape then
+      local shape = options.shape
+      leftX, topY, rightX, bottomY = shape.leftX, shape.topY, shape.rightX, shape.bottomY
    else
       leftX, topY, rightX, bottomY = object.x, object.y, object.x + object.width, object.y + object.height
    end
@@ -115,7 +118,7 @@ function mouse.registerSolid(object, options)
    local isHovered = mouseIsInside(leftX, topY, rightX, bottomY)
    if isHovered then
       mouseHoverIsBlocked = true
-      hoveredRectangleToDraw = (not options or not options.isWholeScreen) and object or nil
+      hoveredRectangleToDraw = { leftX = leftX, topY = topY, rightX = rightX, bottomY = bottomY }
    end
 
    local clicksPerButtonInObject = {}
@@ -211,10 +214,16 @@ end
 function AdvancedMouseInput:draw()
    if hoveredRectangleToDraw then
       love.graphics.setColor(0, 1, 0.5, 0.8)
-      love.graphics.rectangle("line", hoveredRectangleToDraw.x, hoveredRectangleToDraw.y,
-         hoveredRectangleToDraw.width, hoveredRectangleToDraw.height)
+      local rectX, rectY = hoveredRectangleToDraw.leftX, hoveredRectangleToDraw.topY
+      rectX, rectY = rectX ~= nil and rectX or 1, rectY ~= nil and rectY or 1
+      local rectRightX, rectBottomY = hoveredRectangleToDraw.rightX, hoveredRectangleToDraw.bottomY
+      rectRightX = rectRightX == nil and love.graphics.getWidth() - 1 or rectRightX
+      rectBottomY = rectBottomY == nil and love.graphics.getHeight() - 1 or rectBottomY
+      local rectWidth, rectHeight = rectRightX - rectX, rectBottomY - rectY
+
+      love.graphics.rectangle("line", rectX, rectY, rectWidth, rectHeight)
       love.graphics.setColor(0, 0.3, 0.1, 1)
-      love.graphics.print("Hovered", hoveredRectangleToDraw.x, hoveredRectangleToDraw.y - DEBUG_TEXT_HEIGHT)
+      love.graphics.print("Hovered", rectX, math.max(rectY - DEBUG_TEXT_HEIGHT, 0))
 
       hoveredRectangleToDraw = nil
    end

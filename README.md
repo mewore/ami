@@ -19,6 +19,9 @@ been initiated with.
 
 #### `Options`
 - **isWholeScreen** (`boolean`) Whether the object always covers the whole screen.
+- **shape** (`{[leftX]: number, [topY]: number, [rightX]: number, [bottomY]: number}`) A custom rectangular shape to be
+used for the hover check. If, for example, `leftX` is `nil`, then the shape is considered to extend infinitely to the
+left.
 
 #### `MouseClick` ([mousepressed](https://love2d.org/wiki/love.mousepressed) event)
 - **x** (`int`) The X position of the cursor (distance from the left border of the window), in pixels.
