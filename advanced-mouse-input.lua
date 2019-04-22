@@ -103,8 +103,12 @@ local function extractFrom(array, predicate)
    return result
 end
 
+local mouseInfoPerSolid = {}
+
 --- Considers a rectangle solid.
 function mouse.registerSolid(object, options)
+   if mouseInfoPerSolid[tostring(object)] then return mouseInfoPerSolid[tostring(object)] end
+
    local leftX, topY, rightX, bottomY
    if options and options.isWholeScreen then
       leftX, topY, rightX, bottomY = nil, nil, nil, nil
@@ -195,11 +199,13 @@ function mouse.registerSolid(object, options)
       dragToDraw = drag
    end
 
+   mouseInfoPerSolid[tostring(object)] = result
    return result
 end
 
 --- Must be called at the very beginning of the LOVE update handler
 function AdvancedMouseInput:beforeUpdate()
+   mouseInfoPerSolid = {}
    dragToDraw = nil
    updateCounter = updateCounter + 1
    mouseHoverIsBlocked = false

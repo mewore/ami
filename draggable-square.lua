@@ -42,7 +42,7 @@ end
 
 --- LOVE update handler
 function DraggableSquare:update()
-   local mouseInfo = love.mouse.registerSolid(self)
+   local mouseInfo = love.mouse.registerSolid(self) and love.mouse.registerSolid(self)
    self.isHovered = mouseInfo.isHovered
 
    if mouseInfo.isHovered then
