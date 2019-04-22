@@ -1,5 +1,5 @@
 --- Advanced Mouse Input
--- @version 1.0.4
+-- @version 1.0.5
 -- @url https://raw.githubusercontent.com/mewore/ami/master/advanced-mouse-input.lua
 -- @description A "wrapper" of the built-in LOVE mouse input handlers that allows for easier complex input handling.
 
